@@ -61,30 +61,30 @@ const SearchBar = ({ onSelect, isLoading }: SearchBarProps) => {
     <section className="w-full" ref={containerRef}>
       <div className="relative">
         {searching || isLoading ? (
-          <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
+          <Loader2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground animate-spin" />
         ) : (
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         )}
         <Input
           value={query}
           onChange={(e) => handleChange(e.target.value)}
           placeholder="Search a token (e.g. Bitcoin, Ethereum)"
-          className="pl-10 bg-card border-border text-foreground placeholder:text-muted-foreground"
+          className="pl-10 h-12 bg-card border-border text-foreground placeholder:text-muted-foreground text-sm rounded-lg focus-visible:ring-primary/50"
         />
       </div>
 
       {open && results.length > 0 && (
-        <ul className="mt-1 rounded-md border border-border bg-card overflow-hidden">
+        <ul className="mt-1.5 rounded-lg border border-border bg-card overflow-hidden shadow-lg shadow-black/20 animate-fade-in">
           {results.map((coin) => (
             <li key={coin.id}>
               <button
                 type="button"
                 onClick={() => handleSelect(coin)}
-                className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-secondary transition-colors"
+                className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-secondary/70 transition-colors"
               >
-                <img src={coin.thumb} alt="" className="h-5 w-5 rounded-full" />
-                <span className="text-sm font-medium text-foreground">{coin.name}</span>
-                <span className="text-xs text-muted-foreground uppercase">{coin.symbol}</span>
+                <img src={coin.thumb} alt="" className="h-6 w-6 rounded-full" />
+                <span className="text-sm font-medium text-foreground flex-1">{coin.name}</span>
+                <span className="text-xs text-muted-foreground uppercase font-mono">{coin.symbol}</span>
               </button>
             </li>
           ))}
