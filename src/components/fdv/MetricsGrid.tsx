@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { CoinData } from "@/lib/coingecko";
 
 interface MetricsGridProps {
   data: CoinData | null;
+  loading?: boolean;
 }
 
 function fmt(n: number | null | undefined): string {
@@ -21,12 +23,12 @@ function fmtSupply(n: number | null | undefined): string {
   return n.toLocaleString();
 }
 
-const MetricsGrid = ({ data }: MetricsGridProps) => {
+const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
   const metrics = [
     { label: "Fully Diluted Valuation", value: fmt(data?.fully_diluted_valuation) },
     { label: "Market Cap", value: fmt(data?.market_cap) },
     { label: "Circulating Supply", value: fmtSupply(data?.circulating_supply) },
-    { label: "Total Supply", value: fmtSupply(data?.total_supply) },
+    { label: "Max Supply", value: fmtSupply(data?.max_supply) },
   ];
 
   return (
@@ -35,7 +37,11 @@ const MetricsGrid = ({ data }: MetricsGridProps) => {
         <Card key={metric.label} className="bg-card border-border">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">{metric.label}</p>
-            <p className="mt-1 text-lg font-semibold text-foreground">{metric.value}</p>
+            {loading ? (
+              <Skeleton className="h-6 w-20 mt-1" />
+            ) : (
+              <p className="mt-1 text-lg font-semibold text-foreground">{metric.value}</p>
+            )}
           </CardContent>
         </Card>
       ))}
