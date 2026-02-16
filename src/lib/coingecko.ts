@@ -16,6 +16,7 @@ export interface CoinData {
   fully_diluted_valuation: number | null;
   circulating_supply: number;
   total_supply: number | null;
+  max_supply: number | null;
 }
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
@@ -24,7 +25,10 @@ export async function searchTokens(query: string): Promise<CoinSearchResult[]> {
   if (!query || query.trim().length < 2) return [];
 
   const res = await fetch(`${BASE_URL}/search?query=${encodeURIComponent(query.trim())}`);
-  if (!res.ok) throw new Error("Search failed");
+  if (!res.ok) {
+    if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
+    throw new Error("Search failed. Please try again.");
+  }
 
   const data = await res.json();
   return (data.coins ?? []).slice(0, 8).map((c: any) => ({
@@ -39,10 +43,13 @@ export async function fetchCoinData(coinId: string): Promise<CoinData> {
   const res = await fetch(
     `${BASE_URL}/coins/markets?vs_currency=usd&ids=${encodeURIComponent(coinId)}&sparkline=false`
   );
-  if (!res.ok) throw new Error("Failed to fetch token data");
+  if (!res.ok) {
+    if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
+    throw new Error("Failed to fetch token data. Please try again.");
+  }
 
   const data = await res.json();
-  if (!data.length) throw new Error("Token not found");
+  if (!data.length) throw new Error("Token not found.");
 
   const coin = data[0];
   return {
@@ -56,5 +63,6 @@ export async function fetchCoinData(coinId: string): Promise<CoinData> {
     fully_diluted_valuation: coin.fully_diluted_valuation,
     circulating_supply: coin.circulating_supply,
     total_supply: coin.total_supply,
+    max_supply: coin.max_supply ?? null,
   };
 }

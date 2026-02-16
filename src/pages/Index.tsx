@@ -39,10 +39,10 @@ const Index = () => {
           </div>
         )}
 
-        <TokenOverview data={coinData} />
-        <MetricsGrid data={coinData} />
-        <SupplyBar data={coinData} />
-        <FdvComparison data={coinData} />
+        <TokenOverview data={coinData} loading={loading} />
+        <MetricsGrid data={coinData} loading={loading} />
+        <SupplyBar data={coinData} loading={loading} />
+        <FdvComparison data={coinData} loading={loading} />
         <Footer />
       </div>
     </main>
