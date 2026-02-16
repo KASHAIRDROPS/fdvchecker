@@ -24,9 +24,13 @@ function fmtSupply(n: number | null | undefined): string {
 }
 
 const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
+  const price = data?.current_price ?? 0;
+  const calculatedMarketCap = price * (data?.circulating_supply ?? 0);
+  const calculatedFdv = price * (data?.max_supply ?? data?.total_supply ?? 0);
+
   const metrics = [
-    { label: "Fully Diluted Valuation", value: fmt(data?.fully_diluted_valuation) },
-    { label: "Market Cap", value: fmt(data?.market_cap) },
+    { label: "Fully Diluted Valuation", value: fmt(data ? calculatedFdv : null) },
+    { label: "Market Cap", value: fmt(data ? calculatedMarketCap : null) },
     { label: "Circulating Supply", value: fmtSupply(data?.circulating_supply) },
     { label: "Max Supply", value: fmtSupply(data?.max_supply) },
   ];
