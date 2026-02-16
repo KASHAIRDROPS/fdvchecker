@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAnimatedNumber } from "@/hooks/use-animated-number";
 import type { CoinData } from "@/lib/coingecko";
 
 interface SupplyBarProps {
@@ -20,29 +21,35 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
   const max = data?.max_supply ?? data?.total_supply ?? 0;
   const pct = max > 0 ? Math.round((circ / max) * 100) : 0;
   const locked = max > 0 ? 100 - pct : 0;
+  const animatedPct = useAnimatedNumber(data ? pct : 0, 800);
 
   return (
-    <Card className="bg-card border-border">
-      <CardContent className="p-4 space-y-3">
+    <Card className="bg-card border-border animate-fade-in">
+      <CardContent className="p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-foreground">Supply Breakdown</p>
+          <p className="text-sm font-semibold text-foreground">Supply Breakdown</p>
           {loading ? (
-            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-24" />
           ) : (
-            <span className="text-sm font-semibold text-primary">
+            <span className="text-sm font-bold text-primary tabular-nums">
               {data ? `${pct}% unlocked` : "—"}
             </span>
           )}
         </div>
 
         {loading ? (
-          <Skeleton className="h-4 w-full rounded-full" />
+          <Skeleton className="h-5 w-full rounded-full" />
         ) : (
-          <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
+          <div className="relative h-5 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className="h-full rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${data ? pct : 0}%` }}
+              className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+              style={{ width: `${animatedPct}%` }}
             />
+            {data && pct > 8 && (
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+                {Math.round(animatedPct)}%
+              </span>
+            )}
           </div>
         )}
 
@@ -55,13 +62,13 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
           ) : (
             <>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-primary" />
+                <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                 <span className="text-muted-foreground">
                   Circulating: {data ? fmtCompact(circ) : "—"}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-secondary" />
+                <span className="h-2.5 w-2.5 rounded-full bg-secondary border border-border" />
                 <span className="text-muted-foreground">
                   Locked: {data ? (max > 0 ? `${locked}%` : "∞") : "—"}
                 </span>
@@ -71,7 +78,7 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
         </div>
 
         {data && max > 0 && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground pt-1 border-t border-border">
             Max Supply: {fmtCompact(max)}
           </p>
         )}

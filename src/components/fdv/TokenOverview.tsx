@@ -12,40 +12,40 @@ const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
   const changeColor = change != null ? (change >= 0 ? "text-primary" : "text-destructive") : "";
 
   return (
-    <Card className="bg-card border-border">
-      <CardContent className="flex items-center gap-4 p-4">
+    <Card className="bg-card border-border animate-fade-in">
+      <CardContent className="flex items-center gap-4 p-5">
         {loading ? (
-          <Skeleton className="h-10 w-10 rounded-full" />
+          <Skeleton className="h-11 w-11 rounded-full shrink-0" />
         ) : data?.image ? (
-          <img src={data.image} alt={data.name} className="h-10 w-10 rounded-full" />
+          <img src={data.image} alt={data.name} className="h-11 w-11 rounded-full shrink-0 animate-scale-in" />
         ) : (
-          <div className="h-10 w-10 rounded-full bg-secondary" />
+          <div className="h-11 w-11 rounded-full bg-secondary shrink-0" />
         )}
         <div className="flex-1 min-w-0">
           {loading ? (
             <>
-              <Skeleton className="h-5 w-24 mb-1" />
-              <Skeleton className="h-3 w-12" />
+              <Skeleton className="h-5 w-28 mb-1.5" />
+              <Skeleton className="h-3 w-14" />
             </>
           ) : (
             <>
-              <p className="font-semibold text-foreground truncate">{data?.name ?? "—"}</p>
-              <p className="text-xs text-muted-foreground">{data?.symbol ?? "Search a token"}</p>
+              <p className="font-bold text-foreground truncate text-lg leading-tight">{data?.name ?? "—"}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{data?.symbol ?? "Search a token"}</p>
             </>
           )}
         </div>
-        <div className="text-right">
+        <div className="text-right shrink-0">
           {loading ? (
             <>
-              <Skeleton className="h-5 w-20 mb-1 ml-auto" />
-              <Skeleton className="h-3 w-14 ml-auto" />
+              <Skeleton className="h-5 w-24 mb-1.5 ml-auto" />
+              <Skeleton className="h-3 w-16 ml-auto" />
             </>
           ) : (
             <>
-              <p className="font-semibold text-foreground">
+              <p className="font-bold text-foreground text-lg tabular-nums">
                 {data ? `$${data.current_price.toLocaleString()}` : "—"}
               </p>
-              <p className={`text-xs ${changeColor || "text-muted-foreground"}`}>
+              <p className={`text-xs mt-0.5 font-medium ${changeColor || "text-muted-foreground"}`}>
                 {change != null ? `${change >= 0 ? "+" : ""}${change.toFixed(2)}%` : "24h: —"}
               </p>
             </>

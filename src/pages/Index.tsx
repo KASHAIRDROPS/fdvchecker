@@ -29,20 +29,23 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-md px-4 py-2 space-y-4">
+      <div className="mx-auto max-w-md px-4 sm:px-6 py-2 space-y-5">
         <Header />
         <SearchBar onSelect={handleSelect} isLoading={loading} />
 
         {error && (
-          <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in">
             {error}
           </div>
         )}
 
-        <TokenOverview data={coinData} loading={loading} />
-        <MetricsGrid data={coinData} loading={loading} />
-        <SupplyBar data={coinData} loading={loading} />
-        <FdvComparison data={coinData} loading={loading} />
+        <div className="space-y-4">
+          <TokenOverview data={coinData} loading={loading} />
+          <MetricsGrid data={coinData} loading={loading} />
+          <SupplyBar data={coinData} loading={loading} />
+          <FdvComparison data={coinData} loading={loading} />
+        </div>
+
         <Footer />
       </div>
     </main>
