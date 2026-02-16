@@ -8,9 +8,10 @@ interface FdvComparisonProps {
 }
 
 const FdvComparison = ({ data, loading }: FdvComparisonProps) => {
-  const fdv = data?.fully_diluted_valuation;
-  const mc = data?.market_cap;
-  const ratio = fdv && mc && mc > 0 ? (fdv / mc).toFixed(2) : null;
+  const price = data?.current_price ?? 0;
+  const mc = price * (data?.circulating_supply ?? 0);
+  const fdv = price * (data?.max_supply ?? data?.total_supply ?? 0);
+  const ratio = data && mc > 0 ? (fdv / mc).toFixed(2) : null;
 
   return (
     <Card className="bg-card border-border">
