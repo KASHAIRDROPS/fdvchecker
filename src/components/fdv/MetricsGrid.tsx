@@ -31,12 +31,14 @@ const AnimatedMetric = ({
   formatter,
   loading,
   delay,
+  showDollar,
 }: {
   label: string;
   rawValue: number;
   formatter: (n: number) => string;
   loading?: boolean;
   delay: number;
+  showDollar?: boolean;
 }) => {
   const animated = useAnimatedNumber(rawValue);
 
@@ -49,9 +51,16 @@ const AnimatedMetric = ({
         {loading ? (
           <Skeleton className="h-7 w-24 mt-2" />
         ) : (
-          <p className="mt-2 text-xl font-bold text-foreground tabular-nums animate-fade-in">
-            {rawValue > 0 ? formatter(animated) : "—"}
-          </p>
+          <>
+            <p className="mt-2 text-xl font-bold text-foreground tabular-nums animate-fade-in">
+              {rawValue > 0 ? formatter(animated) : "—"}
+            </p>
+            {rawValue > 0 && (
+              <p className="mt-0.5 text-[10px] text-muted-foreground/70 tabular-nums">
+                {showDollar ? "$" : ""}{rawValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              </p>
+            )}
+          </>
         )}
       </CardContent>
     </Card>
@@ -62,10 +71,10 @@ const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
   const { marketCap, fdv, maxSupply } = computeMetrics(data);
 
   const metrics = [
-    { label: "Fully Diluted Valuation", value: data ? fdv : 0, formatter: fmt },
-    { label: "Market Cap", value: data ? marketCap : 0, formatter: fmt },
-    { label: "Circulating Supply", value: data?.circulating_supply ?? 0, formatter: fmtSupply },
-    { label: "Max Supply", value: data ? maxSupply : 0, formatter: fmtSupply },
+    { label: "Fully Diluted Valuation", value: data ? fdv : 0, formatter: fmt, showDollar: true },
+    { label: "Market Cap", value: data ? marketCap : 0, formatter: fmt, showDollar: true },
+    { label: "Circulating Supply", value: data?.circulating_supply ?? 0, formatter: fmtSupply, showDollar: false },
+    { label: "Max Supply", value: data ? maxSupply : 0, formatter: fmtSupply, showDollar: false },
   ];
 
   return (
@@ -78,6 +87,7 @@ const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
           formatter={metric.formatter}
           loading={loading}
           delay={i * 75}
+          showDollar={metric.showDollar}
         />
       ))}
     </section>
