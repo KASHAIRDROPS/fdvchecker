@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 export function useAnimatedNumber(target: number, duration = 600): number {
-  const [display, setDisplay] = useState(0);
-  const prev = useRef(0);
+  const [display, setDisplay] = useState(target);
+  const prev = useRef(target);
   const rafRef = useRef<number>();
 
   useEffect(() => {

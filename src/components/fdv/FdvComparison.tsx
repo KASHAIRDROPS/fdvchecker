@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { computeMetrics } from "@/lib/metrics";
 import type { CoinData } from "@/lib/coingecko";
 
 interface FdvComparisonProps {
@@ -25,10 +26,7 @@ function getRatioColor(ratio: number | null): string {
 }
 
 const FdvComparison = ({ data, loading }: FdvComparisonProps) => {
-  const price = data?.current_price ?? 0;
-  const mc = price * (data?.circulating_supply ?? 0);
-  const fdv = price * (data?.max_supply ?? data?.total_supply ?? 0);
-  const ratioNum = data && mc > 0 ? fdv / mc : null;
+  const { ratio: ratioNum } = computeMetrics(data);
   const ratioStr = ratioNum ? ratioNum.toFixed(2) : null;
 
   return (

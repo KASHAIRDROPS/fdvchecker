@@ -16,6 +16,7 @@ const Index = () => {
   const handleSelect = async (coinId: string) => {
     setLoading(true);
     setError(null);
+    setCoinData(null);
     try {
       const data = await fetchCoinData(coinId);
       setCoinData(data);
