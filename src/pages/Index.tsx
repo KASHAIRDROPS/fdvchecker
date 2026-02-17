@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/fdv/Header";
 import SearchBar from "@/components/fdv/SearchBar";
 import TokenOverview from "@/components/fdv/TokenOverview";
@@ -27,6 +27,10 @@ const Index = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    handleSelect("bitcoin");
+  }, []);
 
   return (
     <main className="min-h-screen bg-background">
