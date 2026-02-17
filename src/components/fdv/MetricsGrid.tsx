@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAnimatedNumber } from "@/hooks/use-animated-number";
+import { computeMetrics } from "@/lib/metrics";
 import type { CoinData } from "@/lib/coingecko";
 
 interface MetricsGridProps {
@@ -58,15 +59,13 @@ const AnimatedMetric = ({
 };
 
 const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
-  const price = data?.current_price ?? 0;
-  const calculatedMarketCap = price * (data?.circulating_supply ?? 0);
-  const calculatedFdv = price * (data?.max_supply ?? data?.total_supply ?? 0);
+  const { marketCap, fdv, maxSupply } = computeMetrics(data);
 
   const metrics = [
-    { label: "Fully Diluted Valuation", value: data ? calculatedFdv : 0, formatter: fmt },
-    { label: "Market Cap", value: data ? calculatedMarketCap : 0, formatter: fmt },
+    { label: "Fully Diluted Valuation", value: data ? fdv : 0, formatter: fmt },
+    { label: "Market Cap", value: data ? marketCap : 0, formatter: fmt },
     { label: "Circulating Supply", value: data?.circulating_supply ?? 0, formatter: fmtSupply },
-    { label: "Max Supply", value: data?.max_supply ?? 0, formatter: fmtSupply },
+    { label: "Max Supply", value: data ? maxSupply : 0, formatter: fmtSupply },
   ];
 
   return (
