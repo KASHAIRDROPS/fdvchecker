@@ -47,12 +47,12 @@ const AnimatedMetric = ({
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardContent className="p-4">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">{label}</p>
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
         {loading ? (
           <Skeleton className="h-7 w-24 mt-2" />
         ) : (
           <>
-            <p className="mt-2 text-xl font-semibold text-foreground tabular-nums font-mono animate-fade-in">
+            <p className="mt-2 text-xl font-bold text-foreground tabular-nums animate-fade-in">
               {rawValue > 0 ? formatter(animated) : "—"}
             </p>
             {rawValue > 0 && (

@@ -31,7 +31,7 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
           {loading ? (
             <Skeleton className="h-5 w-24" />
           ) : (
-            <span className="text-sm font-medium text-foreground tabular-nums font-mono">
+            <span className="text-sm font-bold text-primary tabular-nums">
               {data ? `${pct}% unlocked` : "—"}
             </span>
           )}
@@ -42,11 +42,11 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
         ) : (
           <div className="relative h-5 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className="h-full rounded-full bg-foreground/30 transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
               style={{ width: `${animatedPct}%` }}
             />
             {data && pct > 8 && (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-foreground font-mono">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
                 {Math.round(animatedPct)}%
               </span>
             )}
@@ -62,7 +62,7 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
           ) : (
             <>
               <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-foreground/30" />
+                <span className="h-2.5 w-2.5 rounded-full bg-primary" />
                 <span className="text-muted-foreground">
                   Circulating: {data ? fmtCompact(circ) : "—"}
                 </span>
