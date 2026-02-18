@@ -19,9 +19,8 @@ function getInsight(ratio: number | null, name?: string): string {
 
 function getRatioColor(ratio: number | null): string {
   if (!ratio) return "text-foreground";
-  if (ratio <= 1.05) return "text-primary";
-  if (ratio <= 1.5) return "text-primary";
-  if (ratio <= 3) return "text-yellow-400";
+  if (ratio <= 1.5) return "text-foreground";
+  if (ratio <= 3) return "text-muted-foreground";
   return "text-destructive";
 }
 
@@ -32,11 +31,11 @@ const FdvComparison = ({ data, loading }: FdvComparisonProps) => {
   return (
     <Card className="bg-card border-border animate-fade-in">
       <CardContent className="p-5 space-y-3">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">FDV / Market Cap Ratio</p>
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-mono">FDV / Market Cap Ratio</p>
         {loading ? (
           <Skeleton className="h-9 w-20" />
         ) : (
-          <p className={`text-3xl font-black tabular-nums ${getRatioColor(ratioNum)}`}>
+          <p className={`text-2xl font-semibold tabular-nums font-mono ${getRatioColor(ratioNum)}`}>
             {ratioStr ? `${ratioStr}x` : "—"}
           </p>
         )}
