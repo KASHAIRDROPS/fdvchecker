@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "@/components/fdv/Header";
 import SearchBar from "@/components/fdv/SearchBar";
 import TokenOverview from "@/components/fdv/TokenOverview";
@@ -9,14 +10,16 @@ import Footer from "@/components/fdv/Footer";
 import { fetchCoinData, type CoinData } from "@/lib/coingecko";
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [coinData, setCoinData] = useState<CoinData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSelect = async (coinId: string) => {
+  const handleSelect = useCallback(async (coinId: string) => {
     setLoading(true);
     setError(null);
     setCoinData(null);
+    setSearchParams({ coin: coinId }, { replace: true });
     try {
       const data = await fetchCoinData(coinId);
       setCoinData(data);
@@ -26,10 +29,11 @@ const Index = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setSearchParams]);
 
   useEffect(() => {
-    handleSelect("bitcoin");
+    const coin = searchParams.get("coin") || "bitcoin";
+    handleSelect(coin);
   }, []);
 
   return (
