@@ -9,7 +9,7 @@ interface TokenOverviewProps {
 
 const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
   const change = data?.price_change_percentage_24h;
-  const changeColor = change != null ? (change >= 0 ? "text-foreground" : "text-destructive") : "";
+  const changeColor = change != null ? (change >= 0 ? "text-primary" : "text-destructive") : "";
 
   return (
     <Card className="bg-card border-border animate-fade-in">
