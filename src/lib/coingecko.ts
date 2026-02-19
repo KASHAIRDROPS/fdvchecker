@@ -21,16 +21,25 @@ export interface CoinData {
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
+    throw new Error(`Request failed (${res.status}). Please try again.`);
+  }
+  const contentType = res.headers.get("content-type");
+  if (!contentType?.includes("application/json")) {
+    const text = await res.text();
+    console.error("Expected JSON but got:", contentType, text.substring(0, 200));
+    throw new Error("Unexpected response from API. Please try again.");
+  }
+  return res.json();
+}
+
 export async function searchTokens(query: string): Promise<CoinSearchResult[]> {
   if (!query || query.trim().length < 2) return [];
 
-  const res = await fetch(`${BASE_URL}/search?query=${encodeURIComponent(query.trim())}`);
-  if (!res.ok) {
-    if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
-    throw new Error("Search failed. Please try again.");
-  }
-
-  const data = await res.json();
+  const data = await fetchJson<any>(`${BASE_URL}/search?query=${encodeURIComponent(query.trim())}`);
   return (data.coins ?? []).slice(0, 8).map((c: any) => ({
     id: c.id,
     name: c.name,
@@ -40,15 +49,9 @@ export async function searchTokens(query: string): Promise<CoinSearchResult[]> {
 }
 
 export async function fetchCoinData(coinId: string): Promise<CoinData> {
-  const res = await fetch(
+  const data = await fetchJson<any[]>(
     `${BASE_URL}/coins/markets?vs_currency=usd&ids=${encodeURIComponent(coinId)}&sparkline=false`
   );
-  if (!res.ok) {
-    if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
-    throw new Error("Failed to fetch token data. Please try again.");
-  }
-
-  const data = await res.json();
   if (!data.length) throw new Error("Token not found.");
 
   const coin = data[0];
