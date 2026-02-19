@@ -1,14 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, Clock, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { searchTokens, type CoinSearchResult } from "@/lib/coingecko";
+import type { RecentToken } from "@/hooks/use-recent-searches";
 
 interface SearchBarProps {
-  onSelect: (coinId: string) => void;
+  onSelect: (coinId: string, meta?: { name: string; symbol: string; thumb: string }) => void;
   isLoading: boolean;
+  recentTokens: RecentToken[];
+  onClearRecent: () => void;
 }
 
-const SearchBar = ({ onSelect, isLoading }: SearchBarProps) => {
+const SearchBar = ({ onSelect, isLoading, recentTokens, onClearRecent }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CoinSearchResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -44,7 +47,12 @@ const SearchBar = ({ onSelect, isLoading }: SearchBarProps) => {
     setQuery(coin.name);
     setOpen(false);
     setResults([]);
-    onSelect(coin.id);
+    onSelect(coin.id, { name: coin.name, symbol: coin.symbol, thumb: coin.thumb });
+  };
+
+  const handleRecentClick = (token: RecentToken) => {
+    setQuery(token.name);
+    onSelect(token.id, { name: token.name, symbol: token.symbol, thumb: token.thumb });
   };
 
   useEffect(() => {
@@ -90,6 +98,37 @@ const SearchBar = ({ onSelect, isLoading }: SearchBarProps) => {
             </li>
           ))}
         </ul>
+      )}
+
+      {!open && recentTokens.length > 0 && (
+        <div className="mt-2 animate-fade-in">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span className="text-[11px] font-medium">Recent</span>
+            </div>
+            <button
+              type="button"
+              onClick={onClearRecent}
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Clear
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {recentTokens.map((token) => (
+              <button
+                key={token.id}
+                type="button"
+                onClick={() => handleRecentClick(token)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-border bg-card hover:bg-secondary/70 transition-colors text-xs"
+              >
+                <img src={token.thumb} alt="" className="h-4 w-4 rounded-full" />
+                <span className="text-foreground font-medium">{token.symbol.toUpperCase()}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       )}
     </section>
   );

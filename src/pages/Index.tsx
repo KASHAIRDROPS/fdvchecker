@@ -8,14 +8,15 @@ import SupplyBar from "@/components/fdv/SupplyBar";
 import FdvComparison from "@/components/fdv/FdvComparison";
 import Footer from "@/components/fdv/Footer";
 import { fetchCoinData, type CoinData } from "@/lib/coingecko";
+import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [coinData, setCoinData] = useState<CoinData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const handleSelect = useCallback(async (coinId: string) => {
+  const { recent, addRecent, clearRecent } = useRecentSearches();
+  const handleSelect = useCallback(async (coinId: string, meta?: { name: string; symbol: string; thumb: string }) => {
     setLoading(true);
     setError(null);
     setCoinData(null);
@@ -23,13 +24,19 @@ const Index = () => {
     try {
       const data = await fetchCoinData(coinId);
       setCoinData(data);
+      addRecent({
+        id: coinId,
+        name: meta?.name ?? data.name,
+        symbol: meta?.symbol ?? data.symbol,
+        thumb: meta?.thumb ?? data.image,
+      });
     } catch (e: any) {
       setError(e.message || "Token not found");
       setCoinData(null);
     } finally {
       setLoading(false);
     }
-  }, [setSearchParams]);
+  }, [setSearchParams, addRecent]);
 
   useEffect(() => {
     const coin = searchParams.get("coin") || "bitcoin";
@@ -40,7 +47,7 @@ const Index = () => {
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-md px-4 sm:px-6 py-2 space-y-5">
         <Header />
-        <SearchBar onSelect={handleSelect} isLoading={loading} />
+        <SearchBar onSelect={handleSelect} isLoading={loading} recentTokens={recent} onClearRecent={clearRecent} />
 
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in">
