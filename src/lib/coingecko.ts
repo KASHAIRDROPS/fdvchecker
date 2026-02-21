@@ -22,7 +22,12 @@ export interface CoinData {
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch {
+    throw new Error("Network error — check your connection and try again.");
+  }
   if (!res.ok) {
     if (res.status === 429) throw new Error("Rate limited — please wait a moment and try again.");
     throw new Error(`Request failed (${res.status}). Please try again.`);

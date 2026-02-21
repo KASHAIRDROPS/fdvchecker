@@ -50,8 +50,15 @@ const Index = () => {
         <SearchBar onSelect={handleSelect} isLoading={loading} recentTokens={recent} onClearRecent={clearRecent} />
 
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in">
-            {error}
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in flex items-center justify-between gap-3">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => handleSelect(searchParams.get("coin") || "bitcoin")}
+              className="shrink-0 text-xs font-medium underline underline-offset-2 hover:text-foreground transition-colors"
+            >
+              Retry
+            </button>
           </div>
         )}
 
