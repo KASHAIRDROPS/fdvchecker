@@ -43,6 +43,21 @@ const Index = () => {
     handleSelect(coin);
   }, []);
 
+  // Auto-refresh price every 30s
+  useEffect(() => {
+    const coin = searchParams.get("coin");
+    if (!coin) return;
+    const interval = setInterval(async () => {
+      try {
+        const data = await fetchCoinData(coin);
+        setCoinData(data);
+      } catch {
+        // silent fail on background refresh
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, [searchParams]);
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto max-w-md px-4 sm:px-6 py-2 space-y-5">
