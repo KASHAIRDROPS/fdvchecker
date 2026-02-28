@@ -76,9 +76,9 @@ const SearchBar = ({ onSelect, isLoading, recentTokens, onClearRecent }: SearchB
         <Input
           value={query}
           onChange={(e) => handleChange(e.target.value)}
-          placeholder="Search a token (e.g. Bitcoin, Ethereum)"
+          placeholder="Search token (BTC, ETH, SOL...)"
           inputMode="search"
-          className="pl-10 h-12 bg-card border-border text-foreground placeholder:text-muted-foreground text-sm rounded-lg focus-visible:ring-primary/50"
+          className="pl-10 h-12 bg-input border-border text-foreground placeholder:text-muted-foreground text-sm rounded-lg focus-visible:ring-primary/50"
         />
       </div>
 

@@ -17,6 +17,7 @@ export interface CoinData {
   circulating_supply: number;
   total_supply: number | null;
   max_supply: number | null;
+  total_volume: number;
 }
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
@@ -72,5 +73,6 @@ export async function fetchCoinData(coinId: string): Promise<CoinData> {
     circulating_supply: coin.circulating_supply,
     total_supply: coin.total_supply,
     max_supply: coin.max_supply ?? null,
+    total_volume: coin.total_volume ?? 0,
   };
 }
