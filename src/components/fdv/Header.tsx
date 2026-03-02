@@ -9,7 +9,7 @@ const Header = () => {
           Token Analysis Tool
         </p>
       </div>
-      <h1 className="text-4xl font-black tracking-tight text-primary">FDV CHECKER</h1>
+      <h1 className="text-4xl font-semibold tracking-tight text-primary">FDV CHECKER</h1>
       <p className="mt-2 text-muted-foreground text-sm leading-relaxed max-w-xs mx-auto">
         Analyze fully diluted valuation, supply metrics, and unlock risk for any token.
       </p>

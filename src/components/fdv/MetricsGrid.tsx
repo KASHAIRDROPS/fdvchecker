@@ -52,11 +52,11 @@ const AnimatedMetric = ({
           <Skeleton className="h-7 w-24 mt-2" />
         ) : (
           <>
-            <p className="mt-2 text-xl font-bold text-foreground tabular-nums animate-fade-in">
+            <p className="mt-2 text-xl font-semibold text-foreground font-mono tabular-nums animate-fade-in">
               {rawValue > 0 ? formatter(animated) : "—"}
             </p>
             {rawValue > 0 && (
-              <p className="mt-0.5 text-[10px] text-muted-foreground/70 tabular-nums">
+              <p className="mt-0.5 text-[10px] text-muted-foreground/70 font-mono tabular-nums">
                 {showDollar ? "$" : ""}{rawValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </p>
             )}

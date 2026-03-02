@@ -36,7 +36,7 @@ const FdvComparison = ({ data, loading }: FdvComparisonProps) => {
         {loading ? (
           <Skeleton className="h-9 w-20" />
         ) : (
-          <p className={`text-3xl font-black tabular-nums ${getRatioColor(ratioNum)}`}>
+          <p className={`text-3xl font-semibold font-mono tabular-nums ${getRatioColor(ratioNum)}`}>
             {ratioStr ? `${ratioStr}x` : "—"}
           </p>
         )}
