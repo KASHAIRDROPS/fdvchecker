@@ -12,7 +12,7 @@ const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
   const changeColor = change != null ? (change >= 0 ? "text-primary" : "text-destructive") : "";
 
   return (
-    <Card className="bg-card border-border animate-fade-in">
+    <Card className="bg-card border-primary/30 shadow-[0_0_15px_-3px_hsl(155_80%_44%/0.15)] animate-fade-in">
       <CardContent className="flex items-center gap-4 p-5">
         {loading ? (
           <Skeleton className="h-11 w-11 rounded-full shrink-0" />
