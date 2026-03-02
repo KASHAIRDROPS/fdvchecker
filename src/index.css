@@ -52,5 +52,11 @@
 
   body {
     @apply bg-background text-foreground;
+    background-image:
+      linear-gradient(to bottom, rgba(0, 255, 157, 0.05) 0%, transparent 40%),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
+    background-repeat: no-repeat, repeat, repeat;
   }
 }
