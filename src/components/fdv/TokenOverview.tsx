@@ -29,7 +29,7 @@ const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
             </>
           ) : (
             <>
-              <p className="font-bold text-foreground truncate text-lg leading-tight">{data?.name ?? "—"}</p>
+              <p className="font-semibold text-foreground truncate text-lg leading-tight">{data?.name ?? "—"}</p>
               <p className="text-xs text-muted-foreground mt-0.5">{data?.symbol ?? "Search a token"}</p>
             </>
           )}
@@ -42,7 +42,7 @@ const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
             </>
           ) : (
             <>
-              <p className="font-bold text-foreground text-lg tabular-nums">
+              <p className="font-semibold text-foreground text-lg font-mono tabular-nums">
                 {data ? `$${data.current_price.toLocaleString()}` : "—"}
               </p>
               <p className={`text-xs mt-0.5 font-medium ${changeColor || "text-muted-foreground"}`}>

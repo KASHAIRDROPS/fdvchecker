@@ -27,11 +27,11 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
     <Card className="bg-card border-border animate-fade-in">
       <CardContent className="p-5 space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-foreground">Supply Breakdown</p>
+          <p className="text-sm font-semibold tracking-tight text-foreground">Supply Breakdown</p>
           {loading ? (
             <Skeleton className="h-5 w-24" />
           ) : (
-            <span className="text-sm font-bold text-primary tabular-nums">
+            <span className="text-sm font-semibold text-primary font-mono tabular-nums">
               {data ? `${pct}% unlocked` : "—"}
             </span>
           )}
@@ -46,7 +46,7 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
               style={{ width: `${animatedPct}%` }}
             />
             {data && pct > 8 && (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold font-mono text-primary-foreground">
                 {Math.round(animatedPct)}%
               </span>
             )}
