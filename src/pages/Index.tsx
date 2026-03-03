@@ -6,6 +6,7 @@ import TokenOverview from "@/components/fdv/TokenOverview";
 import MetricsGrid from "@/components/fdv/MetricsGrid";
 import SupplyBar from "@/components/fdv/SupplyBar";
 import FdvComparison from "@/components/fdv/FdvComparison";
+import Converter from "@/components/fdv/Converter";
 import Footer from "@/components/fdv/Footer";
 import { fetchCoinData, type CoinData } from "@/lib/coingecko";
 import { useRecentSearches } from "@/hooks/use-recent-searches";
@@ -82,6 +83,7 @@ const Index = () => {
           <MetricsGrid data={coinData} loading={loading} />
           <SupplyBar data={coinData} loading={loading} />
           <FdvComparison data={coinData} loading={loading} />
+          <Converter data={coinData} loading={loading} />
         </div>
 
         <Footer />
