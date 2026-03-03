@@ -151,12 +151,13 @@ const Converter = ({ data, loading }: ConverterProps) => {
   const [selectedFiat, setSelectedFiat] = useState("USD");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // "From" coin is always the page's main coin (data prop)
-  // "To" coin is selectable when in crypto-to-crypto mode
+  const [fromCoin, setFromCoin] = useState<CoinData | null>(null);
   const [toCoin, setToCoin] = useState<CoinData | null>(null);
 
-  const fromPrice = data?.current_price ?? 0;
-  const fromSymbol = data?.symbol ?? "???";
+  // Use custom fromCoin if selected, otherwise fall back to page data
+  const activeFrom = fromCoin ?? data;
+  const fromPrice = activeFrom?.current_price ?? 0;
+  const fromSymbol = activeFrom?.symbol ?? "???";
   const fiat = FIAT_RATES[selectedFiat];
   const numAmount = parseFloat(amount) || 0;
 
@@ -227,13 +228,12 @@ const Converter = ({ data, loading }: ConverterProps) => {
           ))}
         </div>
 
-        {/* From: always the current page coin */}
+        {/* From: selectable coin */}
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">From</label>
           <div className="flex gap-2">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/50 border border-border shrink-0">
-              {data?.image && <img src={data.image} alt="" className="h-5 w-5 rounded-full" />}
-              <span className="text-sm font-semibold text-foreground font-mono uppercase">{fromSymbol}</span>
+            <div className="w-36 shrink-0">
+              <CoinPicker selected={activeFrom} onSelect={setFromCoin} label="Select coin" />
             </div>
             <Input
               type="number"
@@ -306,7 +306,7 @@ const Converter = ({ data, loading }: ConverterProps) => {
         )}
 
         {/* Rate reference */}
-        {data && (
+        {activeFrom && (
           <div className="text-[11px] text-muted-foreground font-mono tabular-nums">
             {mode === "crypto-to-fiat"
               ? `1 ${fromSymbol} = ${fiat.symbol}${formatNumber(fromPrice * fiat.rate)}`
@@ -359,7 +359,7 @@ const Converter = ({ data, loading }: ConverterProps) => {
             </div>
 
             {/* Quick reference */}
-            {data && (
+            {activeFrom && (
               <div className="space-y-1.5">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                   Quick Reference
