@@ -11,7 +11,7 @@ import FdvGapPercentage from "@/components/fdv/FdvGapPercentage";
 import CirculatingSupplyPercentage from "@/components/fdv/CirculatingSupplyPercentage";
 import Converter from "@/components/fdv/Converter";
 import Footer from "@/components/fdv/Footer";
-import { fetchCoinData, type CoinData } from "@/lib/coingecko";
+import { fetchCoinData, type CoinData, testApiConnection } from "@/lib/coingecko";
 import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 const Index = () => {
@@ -20,6 +20,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const { recent, addRecent, clearRecent } = useRecentSearches();
   const handleSelect = useCallback(async (coinId: string, meta?: { name: string; symbol: string; thumb: string }) => {
     setLoading(true);
@@ -43,6 +44,17 @@ const Index = () => {
       setLoading(false);
     }
   }, [setSearchParams, addRecent]);
+
+  useEffect(() => {
+    // Check API status on mount
+    const checkApi = async () => {
+      setApiStatus('checking');
+      const isOnline = await testApiConnection();
+      setApiStatus(isOnline ? 'online' : 'offline');
+      console.log('CoinGecko API Status:', isOnline ? '✅ Online' : '❌ Offline');
+    };
+    checkApi();
+  }, []);
 
   useEffect(() => {
     const coin = searchParams.get("coin") || "bitcoin";
@@ -70,6 +82,17 @@ const Index = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         <Header />
         <SearchBar onSelect={handleSelect} isLoading={loading} recentTokens={recent} onClearRecent={clearRecent} />
+
+        {/* API Status Indicator */}
+        {apiStatus === 'offline' && (
+          <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-500 animate-fade-in">
+            <p className="font-semibold mb-1">⚠️ CoinGecko API is unreachable</p>
+            <p className="text-xs text-muted-foreground">
+              This could be due to: network issues, API downtime, or rate limiting.
+              The app will automatically retry when the connection is restored.
+            </p>
+          </div>
+        )}
 
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in flex items-center justify-between gap-3">
