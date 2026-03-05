@@ -59,15 +59,17 @@ export async function searchTokens(query: string): Promise<CoinSearchResult[]> {
   }));
 }
 
-export async function fetchCoinData(coinId: string): Promise<CoinData> {
+export async function fetchCoinData(coinId: string, skipDetail = false): Promise<CoinData> {
   // Fetch market data and detail (for platforms) in parallel
   const [marketData, detailData] = await Promise.all([
     fetchJson<any[]>(
       `${BASE_URL}/coins/markets?vs_currency=usd&ids=${encodeURIComponent(coinId)}&sparkline=false`
     ),
-    fetchJson<any>(
-      `${BASE_URL}/coins/${encodeURIComponent(coinId)}?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false`
-    ).catch(() => null),
+    skipDetail
+      ? Promise.resolve(null)
+      : fetchJson<any>(
+          `${BASE_URL}/coins/${encodeURIComponent(coinId)}?localization=false&tickers=false&market_data=false&community_data=false&developer_data=false`
+        ).catch(() => null),
   ]);
 
   if (!marketData.length) throw new Error("Token not found.");
