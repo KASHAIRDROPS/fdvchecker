@@ -25,13 +25,13 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
 
   return (
     <Card className="bg-card border-border animate-fade-in">
-      <CardContent className="p-5 space-y-3">
-        <div className="flex items-center justify-between">
+      <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-between gap-2">
           <p className="text-sm font-semibold tracking-tight text-foreground">Supply Breakdown</p>
           {loading ? (
-            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-5 w-20 sm:w-24 shrink-0" />
           ) : (
-            <span className="text-sm font-semibold text-primary font-mono tabular-nums">
+            <span className="text-sm font-semibold text-primary font-mono tabular-nums shrink-0 whitespace-nowrap">
               {data ? `${pct}% unlocked` : "—"}
             </span>
           )}
@@ -40,37 +40,37 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
         {loading ? (
           <Skeleton className="h-5 w-full rounded-full" />
         ) : (
-          <div className="relative h-5 w-full overflow-hidden rounded-full bg-secondary">
+          <div className="relative h-5 w-full overflow-hidden rounded-full bg-secondary shrink-0">
             <div
               className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
               style={{ width: `${animatedPct}%` }}
             />
             {data && pct > 8 && (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold font-mono text-primary-foreground">
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-[11px] font-semibold font-mono text-primary-foreground truncate px-2">
                 {Math.round(animatedPct)}%
               </span>
             )}
           </div>
         )}
 
-        <div className="flex justify-between text-xs">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 text-xs">
           {loading ? (
             <>
-              <Skeleton className="h-3 w-28" />
-              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-3 w-full sm:w-28" />
+              <Skeleton className="h-3 w-full sm:w-28" />
             </>
           ) : (
             <>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-primary" />
-                <span className="text-muted-foreground">
-                  Circulating: {data ? fmtCompact(circ) : "—"}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="h-2.5 w-2.5 rounded-full bg-primary shrink-0" />
+                <span className="text-muted-foreground truncate">
+                  Circulating: <span className="font-medium text-foreground">{data ? fmtCompact(circ) : "—"}</span>
                 </span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-secondary border border-border" />
-                <span className="text-muted-foreground">
-                  Locked: {data ? (max > 0 ? `${locked}%` : "∞") : "—"}
+              <div className="flex items-center gap-1.5 min-w-0 sm:mt-0 mt-0.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-secondary border border-border shrink-0" />
+                <span className="text-muted-foreground truncate">
+                  Locked: <span className="font-medium text-foreground">{data ? (max > 0 ? `${locked}%` : "∞") : "—"}</span>
                 </span>
               </div>
             </>
@@ -78,8 +78,8 @@ const SupplyBar = ({ data, loading }: SupplyBarProps) => {
         </div>
 
         {data && max > 0 && (
-          <p className="text-[11px] text-muted-foreground pt-1 border-t border-border">
-            Max Supply: {fmtCompact(max)}
+          <p className="text-[11px] text-muted-foreground pt-2 sm:pt-3 border-t border-border">
+            Max Supply: <span className="font-medium text-foreground">{fmtCompact(max)}</span>
           </p>
         )}
       </CardContent>

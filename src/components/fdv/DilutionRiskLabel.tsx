@@ -70,17 +70,17 @@ const DilutionRiskLabel = ({ data, loading }: DilutionRiskLabelProps) => {
           </>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              <span className={`text-xs font-semibold uppercase tracking-wider ${risk.color}`}>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`text-xs font-semibold uppercase tracking-wider ${risk.color} shrink-0`}>
                 {risk.level} Dilution Risk
               </span>
               {ratioNum && (
-                <span className="text-[10px] text-muted-foreground font-mono">
+                <span className="text-[10px] text-muted-foreground font-mono whitespace-nowrap">
                   (FDV/Market Cap: {ratioNum.toFixed(2)}x)
                 </span>
               )}
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed break-words">
               {risk.explanation}
             </p>
           </>

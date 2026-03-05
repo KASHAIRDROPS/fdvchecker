@@ -27,19 +27,19 @@ const FdvGapPercentage = ({ data, loading }: FdvGapPercentageProps) => {
 
   return (
     <Card className="bg-card border-border animate-fade-in">
-      <CardContent className="p-5 space-y-3">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">FDV Gap Percentage</p>
+      <CardContent className="p-4 sm:p-5 space-y-2.5 sm:space-y-3">
+        <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground">FDV Gap Percentage</p>
         {loading ? (
           <Skeleton className="h-9 w-24" />
         ) : (
-          <p className={`text-3xl font-semibold font-mono tabular-nums ${getGapColor(gapPercentage)}`}>
+          <p className={`text-2xl sm:text-3xl font-semibold font-mono tabular-nums break-all ${getGapColor(gapPercentage)}`}>
             {formatGap(gapPercentage)}
           </p>
         )}
         {loading ? (
-          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3.5 w-full" />
         ) : (
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed break-words">
             Represents how much higher the fully diluted valuation is compared to current market cap.
           </p>
         )}

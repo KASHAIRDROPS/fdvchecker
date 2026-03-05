@@ -31,8 +31,10 @@ const TokenOverview = ({ data, loading, lastUpdated }: TokenOverviewProps) => {
 
   return (
     <Card className="bg-card border-primary/30 shadow-[0_0_15px_-3px_hsl(155_80%_44%/0.15)] animate-fade-in">
-      <CardContent className="p-5 space-y-3">
-        <div className="flex items-center gap-4">
+      <CardContent className="p-4 sm:p-5 space-y-3 sm:space-y-4">
+        {/* Token Header - Responsive Layout */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+          {/* Token Logo */}
           {loading ? (
             <Skeleton className="h-11 w-11 rounded-full shrink-0" />
           ) : data?.image ? (
@@ -40,6 +42,8 @@ const TokenOverview = ({ data, loading, lastUpdated }: TokenOverviewProps) => {
           ) : (
             <div className="h-11 w-11 rounded-full bg-secondary shrink-0" />
           )}
+          
+          {/* Token Name & Symbol */}
           <div className="flex-1 min-w-0">
             {loading ? (
               <>
@@ -48,23 +52,29 @@ const TokenOverview = ({ data, loading, lastUpdated }: TokenOverviewProps) => {
               </>
             ) : (
               <>
-                <p className="font-semibold text-foreground truncate text-lg leading-tight">{data?.name ?? "—"}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{data?.symbol ?? "Search a token"}</p>
+                <p className="font-semibold text-foreground truncate text-lg leading-tight">
+                  {data?.name ?? "—"}
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5 uppercase tracking-wide">
+                  {data?.symbol ?? "Search a token"}
+                </p>
               </>
             )}
           </div>
-          <div className="text-right shrink-0">
+          
+          {/* Price & Change - Right Aligned */}
+          <div className="w-full sm:w-auto text-left sm:text-right shrink-0">
             {loading ? (
               <>
-                <Skeleton className="h-5 w-24 mb-1.5 ml-auto" />
-                <Skeleton className="h-3 w-16 ml-auto" />
+                <Skeleton className="h-5 w-24 mb-1.5" />
+                <Skeleton className="h-3 w-16" />
               </>
             ) : (
               <>
-                <p className="font-semibold text-foreground text-lg font-mono tabular-nums">
+                <p className="font-semibold text-foreground text-lg sm:text-xl font-mono tabular-nums truncate">
                   {data ? `$${data.current_price.toLocaleString()}` : "—"}
                 </p>
-                <p className={`text-xs mt-0.5 font-medium ${changeColor || "text-muted-foreground"}`}>
+                <p className={`text-xs sm:text-sm mt-0.5 font-medium ${changeColor || "text-muted-foreground"}`}>
                   {change != null ? `${change >= 0 ? "+" : ""}${change.toFixed(2)}%` : "24h: —"}
                 </p>
               </>

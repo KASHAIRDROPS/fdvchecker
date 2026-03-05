@@ -205,19 +205,19 @@ const Converter = ({ data, loading }: ConverterProps) => {
 
   return (
     <Card className="bg-card border-border animate-fade-in">
-      <CardContent className="p-5 space-y-4">
+      <CardContent className="p-4 sm:p-5 space-y-4">
         <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
           Converter
         </p>
 
-        {/* Mode tabs */}
+        {/* Mode tabs - Responsive */}
         <div className="flex gap-1.5">
-          {([["crypto-to-fiat", "Crypto → Fiat"], ["crypto-to-crypto", "Crypto → Crypto"]] as const).map(([m, label]) => (
+          {([ ["crypto-to-fiat", "Crypto → Fiat"], ["crypto-to-crypto", "Crypto → Crypto"] ] as const).map(([m, label]) => (
             <button
               key={m}
               type="button"
               onClick={() => setMode(m)}
-              className={`flex-1 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-wider transition-colors border ${
+              className={`flex-1 py-1.5 rounded-md text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider transition-colors border whitespace-nowrap ${
                 mode === m
                   ? "bg-primary/15 border-primary/40 text-primary"
                   : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground"
@@ -228,18 +228,18 @@ const Converter = ({ data, loading }: ConverterProps) => {
           ))}
         </div>
 
-        {/* From: selectable coin */}
+        {/* From: selectable coin - Responsive layout */}
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">From</label>
-          <div className="flex gap-2">
-            <div className="w-36 shrink-0">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="w-full sm:w-36 shrink-0">
               <CoinPicker selected={activeFrom} onSelect={setFromCoin} label="Select coin" />
             </div>
             <Input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="h-auto bg-secondary/50 border-border text-foreground font-mono tabular-nums text-base"
+              className="h-auto bg-secondary/50 border-border text-foreground font-mono tabular-nums text-sm sm:text-base w-full"
               min="0"
               step="any"
             />
@@ -259,33 +259,33 @@ const Converter = ({ data, loading }: ConverterProps) => {
           </div>
         )}
 
-        {/* To */}
+        {/* To - Responsive layout */}
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">To</label>
           {mode === "crypto-to-crypto" ? (
-            <div className="flex gap-2">
-              <div className="w-36 shrink-0">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="w-full sm:w-36 shrink-0">
                 <CoinPicker selected={toCoin} onSelect={setToCoin} label="Select coin" />
               </div>
               <div className="h-[42px] flex items-center flex-1 bg-secondary/30 border border-border rounded-md px-3">
-                <span className="font-mono tabular-nums text-base text-foreground">
+                <span className="font-mono tabular-nums text-sm sm:text-base text-foreground truncate">
                   {converted ? formatNumber(converted) : "0"}
                 </span>
               </div>
             </div>
           ) : (
             <div className="h-12 flex items-center bg-secondary/30 border border-border rounded-md px-3">
-              <span className="font-mono tabular-nums text-base text-foreground">
+              <span className="font-mono tabular-nums text-sm sm:text-base text-foreground truncate">
                 {converted ? formatNumber(converted) : "0"}
               </span>
-              <span className="ml-auto text-xs text-muted-foreground font-mono font-semibold uppercase">
+              <span className="ml-auto text-xs text-muted-foreground font-mono font-semibold uppercase whitespace-nowrap">
                 {toLabel}
               </span>
             </div>
           )}
         </div>
 
-        {/* Fiat selector (only in fiat mode) */}
+        {/* Fiat selector (only in fiat mode) - Responsive wrap */}
         {mode === "crypto-to-fiat" && (
           <div className="flex flex-wrap gap-1.5">
             {Object.entries(FIAT_RATES).slice(0, 5).map(([code, info]) => (
@@ -293,7 +293,7 @@ const Converter = ({ data, loading }: ConverterProps) => {
                 key={code}
                 type="button"
                 onClick={() => setSelectedFiat(code)}
-                className={`px-2.5 py-1 rounded-md text-[11px] font-mono font-medium transition-colors border ${
+                className={`px-2.5 py-1 rounded-md text-[10px] sm:text-[11px] font-mono font-medium transition-colors border whitespace-nowrap ${
                   selectedFiat === code
                     ? "bg-primary/15 border-primary/40 text-primary"
                     : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground"
@@ -305,9 +305,9 @@ const Converter = ({ data, loading }: ConverterProps) => {
           </div>
         )}
 
-        {/* Rate reference */}
+        {/* Rate reference - Responsive */}
         {activeFrom && (
-          <div className="text-[11px] text-muted-foreground font-mono tabular-nums">
+          <div className="text-[10px] sm:text-[11px] text-muted-foreground font-mono tabular-nums break-words">
             {mode === "crypto-to-fiat"
               ? `1 ${fromSymbol} = ${fiat.symbol}${formatNumber(fromPrice * fiat.rate)}`
               : toCoin
@@ -316,11 +316,11 @@ const Converter = ({ data, loading }: ConverterProps) => {
           </div>
         )}
 
-        {/* Advanced toggle */}
+        {/* Advanced toggle - Responsive */}
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors font-semibold w-full"
+          className="flex items-center gap-1.5 text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors font-semibold w-full"
         >
           {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           Advanced View
@@ -328,28 +328,28 @@ const Converter = ({ data, loading }: ConverterProps) => {
 
         {showAdvanced && (
           <div className="space-y-4 animate-fade-in">
-            {/* All fiat */}
+            {/* All fiat - Responsive grid */}
             <div className="space-y-1.5">
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                 All Currencies
               </p>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5">
                 {Object.entries(FIAT_RATES).map(([code, info]) => {
                   const val = allFiatValues[code] ?? 0;
                   return (
                     <div
                       key={code}
-                      className={`flex items-center justify-between px-3 py-2 rounded-md border transition-colors cursor-pointer ${
+                      className={`flex items-center justify-between px-2 sm:px-3 py-2 rounded-md border transition-colors cursor-pointer ${
                         selectedFiat === code
                           ? "bg-primary/10 border-primary/30"
                           : "bg-secondary/30 border-border hover:border-primary/20"
                       }`}
                       onClick={() => { setSelectedFiat(code); setMode("crypto-to-fiat"); }}
                     >
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-[10px] sm:text-[11px] text-muted-foreground truncate pr-1">
                         {info.flag} {code}
                       </span>
-                      <span className="text-xs font-mono tabular-nums text-foreground">
+                      <span className="text-xs font-mono tabular-nums text-foreground shrink-0 whitespace-nowrap">
                         {info.symbol}{formatNumber(val)}
                       </span>
                     </div>
@@ -358,7 +358,7 @@ const Converter = ({ data, loading }: ConverterProps) => {
               </div>
             </div>
 
-            {/* Quick reference */}
+            {/* Quick reference - Responsive */}
             {activeFrom && (
               <div className="space-y-1.5">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
@@ -368,12 +368,12 @@ const Converter = ({ data, loading }: ConverterProps) => {
                   {[0.001, 0.01, 0.1, 1, 10, 100].map((qty) => (
                     <div
                       key={qty}
-                      className="flex items-center justify-between px-3 py-1.5 text-[11px]"
+                      className="flex items-center justify-between px-3 py-1.5 text-[10px] sm:text-[11px]"
                     >
-                      <span className="font-mono tabular-nums text-muted-foreground">
+                      <span className="font-mono tabular-nums text-muted-foreground truncate pr-2">
                         {qty} {fromSymbol}
                       </span>
-                      <span className="font-mono tabular-nums text-foreground">
+                      <span className="font-mono tabular-nums text-foreground shrink-0 whitespace-nowrap">
                         {mode === "crypto-to-crypto" && toCoin
                           ? `${formatNumber(qty * fromPrice / toCoin.current_price)} ${toCoin.symbol}`
                           : `${fiat.symbol}${formatNumber(qty * fromPrice * fiat.rate)}`}

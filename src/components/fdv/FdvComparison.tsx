@@ -31,19 +31,19 @@ const FdvComparison = ({ data, loading }: FdvComparisonProps) => {
 
   return (
     <Card className="bg-card border-border animate-fade-in">
-      <CardContent className="p-5 space-y-3">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">FDV / Market Cap Ratio</p>
+      <CardContent className="p-4 sm:p-5 space-y-2.5 sm:space-y-3">
+        <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-muted-foreground">FDV / Market Cap Ratio</p>
         {loading ? (
           <Skeleton className="h-9 w-20" />
         ) : (
-          <p className={`text-3xl font-semibold font-mono tabular-nums ${getRatioColor(ratioNum)}`}>
+          <p className={`text-2xl sm:text-3xl font-semibold font-mono tabular-nums break-all ${getRatioColor(ratioNum)}`}>
             {ratioStr ? `${ratioStr}x` : "—"}
           </p>
         )}
         {loading ? (
-          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3.5 w-full" />
         ) : (
-          <p className="text-xs text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed break-words">
             {getInsight(ratioNum, data?.name)}
           </p>
         )}

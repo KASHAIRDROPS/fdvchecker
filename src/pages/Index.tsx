@@ -67,7 +67,7 @@ const Index = () => {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto max-w-md px-4 sm:px-6 py-2 space-y-5">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         <Header />
         <SearchBar onSelect={handleSelect} isLoading={loading} recentTokens={recent} onClearRecent={clearRecent} />
 
@@ -86,12 +86,21 @@ const Index = () => {
 
         <div className="space-y-4">
           <TokenOverview data={coinData} loading={loading} lastUpdated={lastUpdated} />
+          
+          {/* Metrics Grid - Already responsive */}
           <MetricsGrid data={coinData} loading={loading} />
+          
+          {/* Supply Breakdown */}
           <SupplyBar data={coinData} loading={loading} />
-          <CirculatingSupplyPercentage data={coinData} loading={loading} />
-          <FdvComparison data={coinData} loading={loading} />
-          <DilutionRiskLabel data={coinData} loading={loading} />
-          <FdvGapPercentage data={coinData} loading={loading} />
+          
+          {/* Responsive Grid for Additional Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <CirculatingSupplyPercentage data={coinData} loading={loading} />
+            <FdvComparison data={coinData} loading={loading} />
+            <DilutionRiskLabel data={coinData} loading={loading} />
+            <FdvGapPercentage data={coinData} loading={loading} />
+          </div>
+          
           <Converter data={coinData} loading={loading} />
         </div>
 
