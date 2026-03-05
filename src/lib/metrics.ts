@@ -4,11 +4,12 @@ export interface ComputedMetrics {
   marketCap: number;
   fdv: number;
   ratio: number | null;
+  gapPercentage: number | null;
   maxSupply: number;
 }
 
 export function computeMetrics(data: CoinData | null): ComputedMetrics {
-  if (!data) return { marketCap: 0, fdv: 0, ratio: null, maxSupply: 0 };
+  if (!data) return { marketCap: 0, fdv: 0, ratio: null, gapPercentage: null, maxSupply: 0 };
 
   const price = data.current_price ?? 0;
   const circ = data.circulating_supply ?? 0;
@@ -17,6 +18,7 @@ export function computeMetrics(data: CoinData | null): ComputedMetrics {
   const marketCap = price * circ;
   const fdv = price * max;
   const ratio = marketCap > 0 ? fdv / marketCap : null;
+  const gapPercentage = marketCap > 0 ? ((fdv - marketCap) / marketCap) * 100 : null;
 
-  return { marketCap, fdv, ratio, maxSupply: max };
+  return { marketCap, fdv, ratio, gapPercentage, maxSupply: max };
 }

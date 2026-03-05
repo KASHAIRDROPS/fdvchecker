@@ -8,12 +8,13 @@ import type { CoinData } from "@/lib/coingecko";
 interface TokenOverviewProps {
   data: CoinData | null;
   loading?: boolean;
+  lastUpdated?: Date | null;
 }
 
 const shortenAddress = (addr: string) =>
   addr.length > 14 ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : addr;
 
-const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
+const TokenOverview = ({ data, loading, lastUpdated }: TokenOverviewProps) => {
   const [copied, setCopied] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const change = data?.price_change_percentage_24h;
@@ -105,6 +106,21 @@ const TokenOverview = ({ data, loading }: TokenOverviewProps) => {
                 {showAll ? "Show less" : `+${platforms.length - 2} more chains`}
               </button>
             )}
+          </div>
+        )}
+
+        {/* Last Updated Timestamp */}
+        {!loading && lastUpdated && (
+          <div className="pt-1 border-t border-border/50">
+            <p className="text-[10px] text-muted-foreground/80 font-mono tabular-nums">
+              Last updated: {lastUpdated.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                timeZoneName: 'short',
+                hour12: false 
+              })}
+            </p>
           </div>
         )}
       </CardContent>

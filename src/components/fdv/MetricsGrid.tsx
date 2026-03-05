@@ -3,6 +3,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAnimatedNumber } from "@/hooks/use-animated-number";
 import { computeMetrics } from "@/lib/metrics";
 import type { CoinData } from "@/lib/coingecko";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 interface MetricsGridProps {
   data: CoinData | null;
@@ -32,6 +34,7 @@ const AnimatedMetric = ({
   loading,
   delay,
   showDollar,
+  tooltip,
 }: {
   label: string;
   rawValue: number;
@@ -39,6 +42,7 @@ const AnimatedMetric = ({
   loading?: boolean;
   delay: number;
   showDollar?: boolean;
+  tooltip?: string;
 }) => {
   const animated = useAnimatedNumber(rawValue);
 
@@ -47,7 +51,27 @@ const AnimatedMetric = ({
       style={{ animationDelay: `${delay}ms` }}
     >
       <CardContent className="p-4">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+        <div className="flex items-center gap-1.5 mb-2">
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+          {tooltip && (
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="shrink-0 hover:text-foreground transition-colors focus:outline-none focus:ring-1 focus:ring-ring rounded-full p-0.5"
+                    aria-label={`More info about ${label}`}
+                  >
+                    <Info className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="center" className="max-w-xs bg-popover text-popover-foreground border-border shadow-lg">
+                  <p className="text-xs leading-relaxed">{tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
         {loading ? (
           <Skeleton className="h-7 w-24 mt-2" />
         ) : (
@@ -71,10 +95,33 @@ const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
   const { marketCap, fdv, maxSupply } = computeMetrics(data);
 
   const metrics = [
-    { label: "Fully Diluted Valuation", value: data ? fdv : 0, formatter: fmt, showDollar: true },
-    { label: "Market Cap", value: data ? marketCap : 0, formatter: fmt, showDollar: true },
-    { label: "Circulating Supply", value: data?.circulating_supply ?? 0, formatter: fmtSupply, showDollar: false },
-    { label: "Max Supply", value: data ? maxSupply : 0, formatter: fmtSupply, showDollar: false },
+    { 
+      label: "Fully Diluted Valuation", 
+      value: data ? fdv : 0, 
+      formatter: fmt, 
+      showDollar: true,
+      tooltip: "Fully Diluted Valuation = Price × Maximum Supply"
+    },
+    { 
+      label: "Market Cap", 
+      value: data ? marketCap : 0, 
+      formatter: fmt, 
+      showDollar: true,
+      tooltip: "Market Capitalization = Price × Circulating Supply"
+    },
+    { 
+      label: "Circulating Supply", 
+      value: data?.circulating_supply ?? 0, 
+      formatter: fmtSupply, 
+      showDollar: false,
+      tooltip: "Number of tokens currently available in the market"
+    },
+    { 
+      label: "Max Supply", 
+      value: data ? maxSupply : 0, 
+      formatter: fmtSupply, 
+      showDollar: false 
+    },
   ];
 
   return (
@@ -88,6 +135,7 @@ const MetricsGrid = ({ data, loading }: MetricsGridProps) => {
           loading={loading}
           delay={i * 75}
           showDollar={metric.showDollar}
+          tooltip={metric.tooltip}
         />
       ))}
     </section>

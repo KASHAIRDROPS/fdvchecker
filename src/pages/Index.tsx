@@ -6,6 +6,9 @@ import TokenOverview from "@/components/fdv/TokenOverview";
 import MetricsGrid from "@/components/fdv/MetricsGrid";
 import SupplyBar from "@/components/fdv/SupplyBar";
 import FdvComparison from "@/components/fdv/FdvComparison";
+import DilutionRiskLabel from "@/components/fdv/DilutionRiskLabel";
+import FdvGapPercentage from "@/components/fdv/FdvGapPercentage";
+import CirculatingSupplyPercentage from "@/components/fdv/CirculatingSupplyPercentage";
 import Converter from "@/components/fdv/Converter";
 import Footer from "@/components/fdv/Footer";
 import { fetchCoinData, type CoinData } from "@/lib/coingecko";
@@ -16,6 +19,7 @@ const Index = () => {
   const [coinData, setCoinData] = useState<CoinData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { recent, addRecent, clearRecent } = useRecentSearches();
   const handleSelect = useCallback(async (coinId: string, meta?: { name: string; symbol: string; thumb: string }) => {
     setLoading(true);
@@ -25,6 +29,7 @@ const Index = () => {
     try {
       const data = await fetchCoinData(coinId);
       setCoinData(data);
+      setLastUpdated(new Date());
       addRecent({
         id: coinId,
         name: meta?.name ?? data.name,
@@ -52,6 +57,7 @@ const Index = () => {
       try {
         const data = await fetchCoinData(coin, true);
         setCoinData(prev => prev ? { ...data, platforms: prev.platforms } : data);
+        setLastUpdated(new Date());
       } catch {
         // silent fail on background refresh
       }
@@ -79,10 +85,13 @@ const Index = () => {
         )}
 
         <div className="space-y-4">
-          <TokenOverview data={coinData} loading={loading} />
+          <TokenOverview data={coinData} loading={loading} lastUpdated={lastUpdated} />
           <MetricsGrid data={coinData} loading={loading} />
           <SupplyBar data={coinData} loading={loading} />
+          <CirculatingSupplyPercentage data={coinData} loading={loading} />
           <FdvComparison data={coinData} loading={loading} />
+          <DilutionRiskLabel data={coinData} loading={loading} />
+          <FdvGapPercentage data={coinData} loading={loading} />
           <Converter data={coinData} loading={loading} />
         </div>
 
