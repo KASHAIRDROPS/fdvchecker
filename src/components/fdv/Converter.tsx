@@ -154,6 +154,16 @@ const Converter = ({ data, loading }: ConverterProps) => {
   const [fromCoin, setFromCoin] = useState<CoinData | null>(null);
   const [toCoin, setToCoin] = useState<CoinData | null>(null);
 
+  // Popular stablecoins for quick selection
+  const STABLECOINS = useMemo(() => [
+    { id: "tether", symbol: "USDT", name: "Tether" },
+    { id: "usd-coin", symbol: "USDC", name: "USD Coin" },
+    { id: "dai", symbol: "DAI", name: "Dai" },
+    { id: "first-digital-usd", symbol: "FDUSD", name: "First Digital USD" },
+    { id: "true-usd", symbol: "TUSD", name: "TrueUSD" },
+    { id: "pyth-network", symbol: "PYTH", name: "Pyth Network" },
+  ], []);
+
   // Use custom fromCoin if selected, otherwise fall back to page data
   const activeFrom = fromCoin ?? data;
   const fromPrice = activeFrom?.current_price ?? 0;
@@ -281,6 +291,36 @@ const Converter = ({ data, loading }: ConverterProps) => {
               <span className="ml-auto text-xs text-muted-foreground font-mono font-semibold uppercase whitespace-nowrap">
                 {toLabel}
               </span>
+            </div>
+          )}
+
+          {/* Quick stablecoin selector for crypto-to-crypto mode */}
+          {mode === "crypto-to-crypto" && (
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium uppercase tracking-wider self-center">
+                Popular:
+              </span>
+              {STABLECOINS.map((stable) => (
+                <button
+                  key={stable.id}
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const coinData = await fetchCoinData(stable.id);
+                      setToCoin(coinData);
+                    } catch (error) {
+                      console.error(`Failed to load ${stable.symbol}:`, error);
+                    }
+                  }}
+                  className={`px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-mono font-medium transition-colors border whitespace-nowrap ${
+                    toCoin?.id === stable.id
+                      ? "bg-primary/15 border-primary/40 text-primary"
+                      : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {stable.symbol}
+                </button>
+              ))}
             </div>
           )}
         </div>
