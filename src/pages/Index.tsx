@@ -44,14 +44,14 @@ const Index = () => {
     handleSelect(coin);
   }, []);
 
-  // Auto-refresh price every 30s
+  // Auto-refresh price every 30s (markets only, skip detail to avoid rate limits)
   useEffect(() => {
     const coin = searchParams.get("coin");
     if (!coin) return;
     const interval = setInterval(async () => {
       try {
-        const data = await fetchCoinData(coin);
-        setCoinData(data);
+        const data = await fetchCoinData(coin, true);
+        setCoinData(prev => prev ? { ...data, platforms: prev.platforms } : data);
       } catch {
         // silent fail on background refresh
       }
