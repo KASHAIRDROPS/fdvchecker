@@ -90,7 +90,7 @@ const CoinPicker = ({ selected, onSelect, label, loading: externalLoading }: Coi
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/50 border border-border hover:border-primary/40 transition-colors w-full"
+        className="flex items-center gap-2 px-3 py-2 rounded-md bg-secondary/50 border border-border hover:border-primary/40 transition-colors w-full min-h-[42px]"
       >
         {selected?.image && (
           <img src={selected.image} alt="" className="h-5 w-5 rounded-full shrink-0" />
@@ -102,7 +102,7 @@ const CoinPicker = ({ selected, onSelect, label, loading: externalLoading }: Coi
       </button>
 
       {open && (
-        <div className="absolute z-50 left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg shadow-black/30 animate-fade-in overflow-hidden">
+        <div className="absolute z-[100] left-0 right-0 mt-1 rounded-lg border border-border bg-card shadow-lg shadow-black/30 animate-fade-in overflow-hidden">
           <div className="relative p-2">
             {busy ? (
               <Loader2 className="absolute left-4.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground animate-spin" />
@@ -118,7 +118,7 @@ const CoinPicker = ({ selected, onSelect, label, loading: externalLoading }: Coi
             />
           </div>
           {results.length > 0 && (
-            <ul className="max-h-48 overflow-y-auto">
+            <ul className="max-h-60 overflow-y-auto">
               {results.map((coin) => (
                 <li key={coin.id}>
                   <button
@@ -127,9 +127,9 @@ const CoinPicker = ({ selected, onSelect, label, loading: externalLoading }: Coi
                     disabled={fetching}
                     className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left hover:bg-secondary/70 transition-colors disabled:opacity-50"
                   >
-                    <img src={coin.thumb} alt="" className="h-5 w-5 rounded-full" />
+                    <img src={coin.thumb} alt="" className="h-5 w-5 rounded-full shrink-0" />
                     <span className="text-xs font-medium text-foreground flex-1 truncate">{coin.name}</span>
-                    <span className="text-[10px] text-muted-foreground font-mono uppercase">{coin.symbol}</span>
+                    <span className="text-[10px] text-muted-foreground font-mono uppercase shrink-0">{coin.symbol}</span>
                   </button>
                 </li>
               ))}
@@ -231,8 +231,8 @@ const Converter = ({ data, loading }: ConverterProps) => {
         {/* From: selectable coin - Responsive layout */}
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">From</label>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="w-full sm:w-36 shrink-0">
+          <div className="flex flex-col sm:flex-row gap-2 relative">
+            <div className="w-full sm:w-36 shrink-0 relative z-[100]">
               <CoinPicker selected={activeFrom} onSelect={setFromCoin} label="Select coin" />
             </div>
             <Input
@@ -263,8 +263,8 @@ const Converter = ({ data, loading }: ConverterProps) => {
         <div className="space-y-1.5">
           <label className="text-[10px] uppercase tracking-wider text-muted-foreground">To</label>
           {mode === "crypto-to-crypto" ? (
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="w-full sm:w-36 shrink-0">
+            <div className="flex flex-col sm:flex-row gap-2 relative">
+              <div className="w-full sm:w-36 shrink-0 relative z-[100]">
                 <CoinPicker selected={toCoin} onSelect={setToCoin} label="Select coin" />
               </div>
               <div className="h-[42px] flex items-center flex-1 bg-secondary/30 border border-border rounded-md px-3">
@@ -285,9 +285,9 @@ const Converter = ({ data, loading }: ConverterProps) => {
           )}
         </div>
 
-        {/* Fiat selector (only in fiat mode) - Responsive wrap */}
+        {/* Fiat selector (only in fiat mode) - Responsive wrap with proper z-index */}
         {mode === "crypto-to-fiat" && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5 relative z-10">
             {Object.entries(FIAT_RATES).slice(0, 5).map(([code, info]) => (
               <button
                 key={code}
