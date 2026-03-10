@@ -27,29 +27,52 @@ export interface CoinData {
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
-// Try multiple endpoints including CORS proxies
-const getFetchUrls = (endpoint: string) => [
-  `${BASE_URL}${endpoint}`, // Direct
-  `https://proxy.cors.sh/${BASE_URL}${endpoint}`, // CORS proxy
+// Alternative APIs for fallback
+const ALTERNATIVE_APIS = [
+  'https://api.coingecko.com/api/v3',
+  'https://proxy.cors.sh/https://api.coingecko.com/api/v3',
+  'https://allorigins.win/raw?url=' + encodeURIComponent('https://api.coingecko.com/api/v3'),
 ];
+
+// Get all possible URLs to try (direct + proxies)
+const getFetchUrls = (endpoint: string) => 
+  ALTERNATIVE_APIS.map(base => `${base}${endpoint}`);
 
 // Debug: Test if API is reachable
 export async function testApiConnection(): Promise<boolean> {
   try {
-   const controller= new AbortController();
-   const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const controller= new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
     
     // Try direct connection first
-   const response = await fetch(`${BASE_URL}/ping`, {
+  const response = await fetch(`${BASE_URL}/ping`, {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
     
-   return response.ok;
+  return response.ok;
   } catch(error) {
-   console.error('Direct API connection failed:', error.message);
-   return false;
+ console.error('Direct API connection failed:', error.message);
+  return false;
   }
+}
+
+// Fallback mock data for demo mode
+export function getFallbackData(): CoinData {
+ return {
+   id: "bitcoin",
+   name: "Bitcoin",
+   symbol: "BTC",
+   image: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png",
+  current_price: 67432.50,
+  price_change_percentage_24h: 2.34,
+  market_cap: 1324567890123,
+   fully_diluted_valuation: 1417890123456,
+   circulating_supply: 19645312,
+   total_supply: 21000000,
+  max_supply: 21000000,
+   platforms: [],
+  };
 }
 
 async function fetchJson<T>(url: string, retries = 3): Promise<T> {

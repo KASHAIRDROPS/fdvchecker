@@ -11,7 +11,7 @@ import FdvGapPercentage from "@/components/fdv/FdvGapPercentage";
 import CirculatingSupplyPercentage from "@/components/fdv/CirculatingSupplyPercentage";
 import Converter from "@/components/fdv/Converter";
 import Footer from "@/components/fdv/Footer";
-import { fetchCoinData, type CoinData, testApiConnection } from "@/lib/coingecko";
+import { fetchCoinData, type CoinData, testApiConnection, getFallbackData } from "@/lib/coingecko";
 import { useRecentSearches } from "@/hooks/use-recent-searches";
 
 const Index = () => {
@@ -25,21 +25,26 @@ const Index = () => {
   const handleSelect = useCallback(async (coinId: string, meta?: { name: string; symbol: string; thumb: string }) => {
     setLoading(true);
     setError(null);
-    setCoinData(null);
-    setSearchParams({ coin: coinId }, { replace: true });
+
     try {
       const data = await fetchCoinData(coinId);
       setCoinData(data);
       setLastUpdated(new Date());
-      addRecent({
-        id: coinId,
-        name: meta?.name ?? data.name,
-        symbol: meta?.symbol ?? data.symbol,
-        thumb: meta?.thumb ?? data.image,
-      });
-    } catch (e: any) {
-      setError(e.message || "Token not found");
-      setCoinData(null);
+      if (meta) addRecent(meta);
+      setSearchParams({ coin: coinId });
+    } catch(err: any) {
+      console.error('Failed to fetch coin data:', err);
+      
+      // If completely failed, show fallback data with warning
+      if (err.message.includes("Network error") || err.message.includes("Failed to fetch")) {
+        console.warn('Using fallback demo data');
+        const fallback = getFallbackData();
+        setCoinData(fallback);
+        setLastUpdated(null); // Show it's not live
+        setError(`⚠️ Showing demo data - ${err.message}`);
+      } else {
+        setError(err.message || "Failed to load token data");
+      }
     } finally {
       setLoading(false);
     }
@@ -96,8 +101,12 @@ const Index = () => {
         )}
 
         {error && (
-          <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-fade-in flex items-center justify-between gap-3">
-            <span>{error}</span>
+          <div className={`rounded-lg border px-4 py-3 text-sm animate-fade-in flex items-center justify-between gap-3 ${
+            error.includes('Demo') 
+              ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+              : 'border-destructive/50 bg-destructive/10 text-destructive'
+          }`}>
+            <span className="flex-1">{error}</span>
             <button
               type="button"
               onClick={() => handleSelect(searchParams.get("coin") || "bitcoin")}
