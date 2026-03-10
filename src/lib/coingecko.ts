@@ -41,6 +41,103 @@ const getFetchUrls = (endpoint: string) => {
   return [direct, ...proxied];
 };
 
+// ============ IN-MEMORY CACHE IMPLEMENTATION ============
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+// Cache configuration
+const CACHE_TTL = 60 * 1000; // 60 seconds in milliseconds
+const coinGeckoCache = new Map<string, CacheEntry<any>>();
+
+/**
+ * Generate cache key from URL and parameters
+ */
+function getCacheKey(url: string): string {
+  // Normalize URL by sorting query parameters for consistent keys
+  try {
+  const urlObj = new URL(url);
+  const params = Array.from(urlObj.searchParams.entries())
+     .sort((a, b) => a[0].localeCompare(b[0]))
+     .map(([key, value]) => `${key}=${value}`)
+     .join('&');
+  return `${urlObj.pathname}?${params}`;
+  } catch {
+  return url;
+  }
+}
+
+/**
+ * Get cached data if still valid
+ */
+function getCachedData<T>(cacheKey: string): T | null {
+  const entry = coinGeckoCache.get(cacheKey);
+  
+  if (!entry) {
+  return null;
+  }
+  
+  const age = Date.now() - entry.timestamp;
+  
+  if (age < CACHE_TTL) {
+  console.log(`💾 Cache HIT (${Math.round(age/ 1000)}s old)`);
+  return entry.data as T;
+  }
+  
+  // Cache expired, remove it
+  console.log(`🗑️ Cache EXPIRED (${Math.round(age/ 1000)}s old), removing...`);
+  coinGeckoCache.delete(cacheKey);
+  return null;
+}
+
+/**
+ * Store data in cache
+ */
+function setCachedData<T>(cacheKey: string, data: T): void {
+  const entry: CacheEntry<T> = {
+   data,
+   timestamp: Date.now(),
+  };
+  
+  coinGeckoCache.set(cacheKey, entry);
+  console.log(`💾 Cached response (valid for ${CACHE_TTL / 1000}s)`);
+  
+  // Log cache size occasionally
+  if (coinGeckoCache.size % 10 === 0) {
+  console.log(`📊 Cache size: ${coinGeckoCache.size} entries`);
+  }
+}
+
+/**
+ * Clear entire cache (useful for debugging or manual refresh)
+ */
+export function clearCache(): void {
+  coinGeckoCache.clear();
+  console.log('🧹 Cache cleared');
+}
+
+/**
+ * Get cache statistics
+ */
+export function getCacheStats(): { size: number; keys: string[] } {
+  const now = Date.now();
+  const validEntries: string[] = [];
+  
+  coinGeckoCache.forEach((entry, key) => {
+  const age = now - entry.timestamp;
+  if (age < CACHE_TTL) {
+     validEntries.push(`${key} (${Math.round(age / 1000)}s old)`);
+   }
+  });
+  
+  return {
+   size: validEntries.length,
+   keys: validEntries,
+  };
+}
+
 // Debug: Test if API is reachable
 export async function testApiConnection(): Promise<boolean> {
   try {
@@ -79,69 +176,96 @@ export function getFallbackData(): CoinData {
 }
 
 async function fetchJson<T>(url: string, retries = 3): Promise<T> {
-  let lastError: any;
+ // Generate cache key
+ const cacheKey = getCacheKey(url);
+
+ // Check cache first
+ const cachedData = getCachedData<T>(cacheKey);
+ if (cachedData) {
+  return cachedData;
+ }
+
+console.log(`🌐 Fetching from API (cache miss)...`);
+  
+ let lastError: any;
   
   // Get all possible URLs to try (direct + 3 proxies = 4 total endpoints)
  const urls = getFetchUrls(url.replace(BASE_URL, ''));
   
- console.log(`🔄 Fetching CoinGecko data...`);
  console.log(`   Endpoints to try: ${urls.length} (1 direct + ${CORS_PROXIES.length} proxies)`);
   
-  for (let attempt = 1; attempt <= retries; attempt++) {
-   console.log(`\n📡 Attempt ${attempt}/${retries}:`);
-    
-    // Try each URL in sequence
-    for (const tryUrl of urls) {
-      try {
-       const controller= new AbortController();
-       const timeoutId = setTimeout(() => controller.abort(), 10000);
-        
-       const isProxy = !tryUrl.includes(BASE_URL);
-       const proxyName = CORS_PROXIES.find(p => tryUrl.includes(p)) || 'direct';
-        
-       console.log(`   → Trying ${proxyName === 'direct' ? '✅ Direct' : '🔗 ' + proxyName}...`);
-        
-       const res = await fetch(tryUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-        
-       if (!res.ok) {
-         if (res.status === 429) {
-            // Rate limited - wait and retry
-           const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
-           console.log(`   ⏱️ Rate limited. Waiting ${waitTime}ms...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
-            break; // Break inner loop, continue outer retry loop
-          }
-          throw new Error(`Request failed (${res.status}). Please try again.`);
-        }
-        
-       const contentType = res.headers.get("content-type");
-       if (!contentType?.includes("application/json")) {
-         const text = await res.text();
-         console.error(`   ❌ Expected JSON but got: ${contentType}`);
-          throw new Error("Unexpected response from API. Please try again.");
-        }
-        
-       console.log(`   ✅ Success with ${proxyName === 'direct' ? 'direct connection' : proxyName}!`);
-       return res.json();
-      } catch(error: any) {
-        lastError = error;
-       const proxyName = CORS_PROXIES.find(p => tryUrl.includes(p)) || 'direct';
-       console.log(`   ❌ Failed ${proxyName === 'direct' ? 'direct' : proxyName}: ${error.message.substring(0, 60)}`);
-        // Continue to next URL
-      }
-    }
-    
-    // If all URLs failed and we have retries left, wait before trying again
-   if (attempt < retries) {
-     const waitTime= 1000 * attempt;
-     console.log(`\n⏳ All endpoints failed. Retrying in ${waitTime}ms...\n`);
-      await new Promise(resolve => setTimeout(resolve, waitTime));
-    }
+ for (let attempt = 1; attempt <= retries; attempt++) {
+ console.log(`\n📡 Attempt ${attempt}/${retries}:`);
+   
+   // Try each URL in sequence
+   for (const tryUrl of urls) {
+     try {
+     const controller= new AbortController();
+     const timeoutId = setTimeout(() => controller.abort(), 10000);
+       
+     const isProxy = !tryUrl.includes(BASE_URL);
+     const proxyName = CORS_PROXIES.find(p => tryUrl.includes(p)) || 'direct';
+       
+     console.log(`   → Trying ${proxyName === 'direct' ? '✅ Direct' : '🔗 ' + proxyName}...`);
+       
+     const res = await fetch(tryUrl, { signal: controller.signal });
+       clearTimeout(timeoutId);
+       
+     if (!res.ok) {
+       if (res.status === 429) {
+           // Rate limited- handle gracefully with longer wait
+        const waitTime= Math.min(3000 * Math.pow(2, attempt), 10000);
+        console.log(`   ⏱️ Rate limited (429). Waiting ${waitTime/1000}s before retry...`);
+        console.log(`   💡 Tip: This is why we have caching! Reducing API calls.`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          break; // Break inner loop, continue outer retry loop
+         }
+         throw new Error(`Request failed (${res.status}). Please try again.`);
+       }
+       
+     const contentType = res.headers.get("content-type");
+     if (!contentType?.includes("application/json")) {
+       const text = await res.text();
+       console.error(`   ❌ Expected JSON but got: ${contentType}`);
+         throw new Error("Unexpected response from API. Please try again.");
+       }
+       
+     console.log(`   ✅ Success with ${proxyName === 'direct' ? 'direct connection' : proxyName}!`);
+      
+      // Parse response
+    const data = await res.json();
+      
+      // Cache the successful response
+    setCachedData(cacheKey, data);
+      
+    return data;
+     } catch(error: any) {
+       lastError = error;
+     const proxyName = CORS_PROXIES.find(p => tryUrl.includes(p)) || 'direct';
+     console.log(`   ❌ Failed ${proxyName === 'direct' ? 'direct' : proxyName}: ${error.message.substring(0, 60)}`);
+       // Continue to next URL
+     }
+   }
+   
+   // If all URLs failed and we have retries left, wait before trying again
+  if (attempt < retries) {
+   const waitTime= 1000 * attempt;
+   console.log(`\n⏳ All endpoints failed. Retrying in ${waitTime}ms...\n`);
+     await new Promise(resolve => setTimeout(resolve, waitTime));
+   }
   }
   
  console.error('\n❌ All attempts failed. Using fallback data.');
-  throw lastError || new Error("Network error — check your connection and try again.");
+  
+  // If we have a rate limit error, provide helpful message
+ if (lastError?.message?.includes('429')) {
+ console.warn('💡 CoinGecko rate limit reached. Consider:');
+ console.warn('   - Waiting a few minutes before refreshing');
+ console.warn('   - The app will use cached data when available');
+ console.warn('   - Demo mode will activate if this continues');
+ }
+  
+ throw lastError || new Error("Network error — check your connection and try again.");
 }
 
 export async function searchTokens(query: string): Promise<CoinSearchResult[]> {
