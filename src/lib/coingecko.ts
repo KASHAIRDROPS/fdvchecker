@@ -27,54 +27,77 @@ export interface CoinData {
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
+// Try multiple endpoints including CORS proxies
+const getFetchUrls = (endpoint: string) => [
+  `${BASE_URL}${endpoint}`, // Direct
+  `https://proxy.cors.sh/${BASE_URL}${endpoint}`, // CORS proxy
+];
+
 // Debug: Test if API is reachable
 export async function testApiConnection(): Promise<boolean> {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+   const controller= new AbortController();
+   const timeoutId = setTimeout(() => controller.abort(), 8000);
     
-    const response = await fetch(`${BASE_URL}/ping`, {
+    // Try direct connection first
+   const response = await fetch(`${BASE_URL}/ping`, {
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
     
-    return response.ok;
-  } catch {
-    return false;
+   return response.ok;
+  } catch(error) {
+   console.error('Direct API connection failed:', error.message);
+   return false;
   }
 }
 
 async function fetchJson<T>(url: string, retries = 3): Promise<T> {
   let lastError: any;
   
+  // Get all possible URLs to try
+ const urls = getFetchUrls(url.replace(BASE_URL, ''));
+  
   for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        if (res.status === 429) {
-          // Rate limited - wait and retry
-          const waitTime = Math.min(1000 * Math.pow(2, attempt), 5000);
-          console.log(`Rate limited. Waiting ${waitTime}ms before retry ${attempt}/${retries}`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-          continue;
+    // Try each URL in sequence
+    for (const tryUrl of urls) {
+      try {
+       const controller = new AbortController();
+       const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+       const res = await fetch(tryUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) {
+          if (res.status === 429) {
+            // Rate limited - wait and retry
+           const waitTime= Math.min(1000 * Math.pow(2, attempt), 5000);
+           console.log(`Rate limited. Waiting ${waitTime}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            break; // Break inner loop, continue outer retry loop
+          }
+          throw new Error(`Request failed (${res.status}). Please try again.`);
         }
-        throw new Error(`Request failed (${res.status}). Please try again.`);
+        
+       const contentType = res.headers.get("content-type");
+        if (!contentType?.includes("application/json")) {
+         const text = await res.text();
+         console.error("Expected JSON but got:", contentType, text.substring(0, 200));
+          throw new Error("Unexpected response from API. Please try again.");
+        }
+        
+       return res.json();
+      } catch(error: any) {
+        lastError = error;
+       console.log(`Failed with ${tryUrl.includes('proxy.cors.sh') ? 'CORS proxy' : 'direct'}:`, error.message);
+        // Continue to next URL
       }
-      const contentType = res.headers.get("content-type");
-      if (!contentType?.includes("application/json")) {
-        const text = await res.text();
-        console.error("Expected JSON but got:", contentType, text.substring(0, 200));
-        throw new Error("Unexpected response from API. Please try again.");
-      }
-      return res.json();
-    } catch (error: any) {
-      lastError = error;
-      // If it's a network error and we have retries left, wait and retry
-      if (!error.message.includes("Network error") || attempt === retries) {
-        break;
-      }
-      const waitTime = 500 * attempt;
-      console.log(`Network error. Retrying in ${waitTime}ms (attempt ${attempt}/${retries})...`);
+    }
+    
+    // If all URLs failed and we have retries left, wait before trying again
+    if (attempt < retries) {
+     const waitTime= 1000 * attempt;
+     console.log(`All endpoints failed. Retrying in ${waitTime}ms...`);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }

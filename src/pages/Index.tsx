@@ -86,11 +86,12 @@ const Index = () => {
         {/* API Status Indicator */}
         {apiStatus === 'offline' && (
           <div className="rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm text-amber-500 animate-fade-in">
-            <p className="font-semibold mb-1">⚠️ CoinGecko API is unreachable</p>
-            <p className="text-xs text-muted-foreground">
-              This could be due to: network issues, API downtime, or rate limiting.
-              The app will automatically retry when the connection is restored.
-            </p>
+            <p className="font-semibold mb-2">⚠️ CoinGecko API is unreachable</p>
+            <div className="text-xs space-y-1 text-muted-foreground">
+              <p>• This could be due to: network issues, API downtime, CORS blocking, or rate limiting</p>
+              <p>• The app will automatically retry with fallback endpoints</p>
+              <p className="mt-2 pt-2 border-t border-amber-500/20">💡 <strong>Tip:</strong> Check your internet connection or try refreshing the page</p>
+            </div>
           </div>
         )}
 

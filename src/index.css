@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root,
+  .dark {
     --background: 220 30% 6%;
     --foreground: 210 20% 90%;
 
@@ -43,20 +44,59 @@
     --sidebar-border: 220 20% 16%;
     --sidebar-ring: 155 80% 44%;
   }
+
+  .light {
+    --background: 210 20% 98%;
+    --foreground: 220 30% 6%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 6%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 6%;
+
+    --primary: 155 80% 44%;
+    --primary-foreground: 220 30% 6%;
+
+    --secondary: 220 10% 92%;
+    --secondary-foreground: 220 30% 6%;
+
+    --muted: 220 10% 92%;
+    --muted-foreground: 215 12% 40%;
+
+    --accent: 155 80% 44%;
+    --accent-foreground: 220 30% 6%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 155 80% 44%;
+
+    --sidebar-background: 210 20% 96%;
+    --sidebar-foreground: 220 30% 6%;
+    --sidebar-primary: 155 80% 44%;
+    --sidebar-primary-foreground: 220 30% 6%;
+    --sidebar-accent: 220 10% 90%;
+    --sidebar-accent-foreground: 220 30% 6%;
+    --sidebar-border: 220 20% 88%;
+    --sidebar-ring: 155 80% 44%;
+  }
 }
 
 @layer base {
   * {
-    @apply border-border;
+   @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
-    background-image:
-      linear-gradient(to bottom, rgba(0, 255, 157, 0.05) 0%, transparent 40%),
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 100% 100%, 32px 32px, 32px 32px;
-    background-repeat: no-repeat, repeat, repeat;
+   @apply bg-background text-foreground;
+   background-image:
+     linear-gradient(to bottom, rgba(0, 255, 157, 0.05) 0%, transparent 40%),
+     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+   background-size: 100% 100%, 32px 32px, 32px 32px;
+   background-repeat: no-repeat, repeat, repeat;
   }
 }
